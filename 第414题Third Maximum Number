@@ -1,0 +1,27 @@
+题目:Given a non-empty array of integers, return the third maximum number in 
+this array. If it does not exist, return the maximum number. The time complexity must be in O(n).
+思路：感觉没啥好说的，最简单的方法是用Arrays.sort()排序，然后找就行
+代码:
+public class Solution {
+    public int thirdMax(int[] nums) {
+        Arrays.sort(nums);
+        int i,category,before;
+        category = 1;
+        before = nums[nums.length-1];
+        for(i = nums.length-1; i >= 0; i--){
+            if(nums[i] != before){
+                before = nums[i];
+                category++;
+            }
+            if(category == 3){
+                break;
+            }
+        }
+        if(category == 3){
+            return before;
+        }else{
+            return nums[nums.length-1];
+        }
+        
+    }
+}
