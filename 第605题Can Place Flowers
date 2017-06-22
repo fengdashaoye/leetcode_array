@@ -1,0 +1,189 @@
+Suppose you have a long flowerbed in which some of the plots are planted and some are not. 
+However, flowers cannot be planted in adjacent plots - they would compete for water and both would die.
+
+Given a flowerbed (represented as an array containing 0 and 1, where 0 means empty and 1 means not empty), 
+and a number n, return if n new flowers can be planted in it without 
+violating the no-adjacent-flowers rule.
+Example 1:
+Input: flowerbed = [1,0,0,0,1], n = 1
+Output: True
+Example 2:
+Input: flowerbed = [1,0,0,0,1], n = 2
+Output: False
+
+思路:首先分清4中情况 根据首尾有4种情况:0.....0,0......1,1......0,1........1
+然后每种情况在分别分析就行，代码有点长，但是重用的很多。
+代码:
+public class Solution {
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        if(flowerbed == null || flowerbed.length <= 0 || n > flowerbed.length){
+            return false;
+        }
+        int length = flowerbed.length;
+        
+        if(allzero(flowerbed)){
+            if(length%2==0){
+                if(n <= length/2){
+                    return true;
+                }
+            }else{
+                if(n <= ((length/2)+1)){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        int panduan = 0;
+        int count = 0;
+        int result = 0;
+        if(flowerbed[0] == 0){
+            if(flowerbed[length-1] == 0){
+                for(int i = 0; i < length; i++){
+                    if(panduan == 0){//00....1的情况
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{
+                            panduan = 1;
+                            if(count>1){
+                                if(count%2==0){
+                                    result += ((count-1)/2 + 1);
+                                }else{
+                                    result += ((count-1)/2);
+                                }
+                            }
+                            count = 0;//置0,重新计算
+                        }
+                    }else{
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{//10.....01的情况
+                            if(count > 2){
+                                if(count%2 == 0){
+                                    result += ((count-2)/2);
+                                }else{
+                                    result += ((count-2)/2 + 1);
+                                }
+                            }
+                            count = 0;//置0,重新计算
+                        }
+                    }
+                }
+                if(count > 1){//10....0的情况
+                    if(count%2==0){
+                        result += ((count-1)/2 + 1);
+                    }else{
+                        result += ((count-1)/2);
+                    }
+                }
+                
+                if(result >= n){
+                    return true;
+                }
+            }else{
+                for(int i = 0; i < length; i++){
+                    if(panduan == 0){
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{
+                            panduan = 1;
+                            if(count > 1){//0....01的情况
+                                if(count%2==0){
+                                    result += ((count-1)/2 + 1);
+                                }else{
+                                    result += ((count-1)/2);
+                                }
+                            }
+                            count = 0;
+                        }
+                    }else{//10.....1的情况
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{
+                            if(count > 2){
+                                if(count%2 == 0){
+                                    result += ((count-2)/2);
+                                }else{
+                                    result += ((count-2)/2 + 1);
+                                }
+                            }
+                            count = 0;//置0,重新计算
+                        }
+                        
+                    }
+                }
+                if(result >= n){
+                    return true;
+                }
+            }
+        }else{
+            if(flowerbed[length-1] == 0){
+                for(int i = length-1; i >= 0; i--){
+                    if(panduan == 0){
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{
+                            panduan = 1;
+                            if(count > 1){//0....01的情况,从后往前
+                                if(count%2==0){
+                                    result += ((count-1)/2 + 1);
+                                }else{
+                                    result += ((count-1)/2);
+                                }
+                            }
+                            count = 0;
+                        }
+                    }else{//处理10....01的情况
+                        if(flowerbed[i] == 0){
+                            count++;
+                        }else{
+                            if(count > 2){
+                                if(count%2 == 0){
+                                    result += ((count-2)/2);
+                                }else{
+                                    result += ((count-2)/2 + 1);
+                                }
+                            }
+                            count = 0;//置0,重新计算
+                        }
+                    }
+                    
+                }
+                if(result >= n){
+                    return true;
+                }
+                
+            }else{
+                for(int i = 1; i < length; i++){//处理10....01的情况
+                    if(flowerbed[i] == 0){
+                        count++;
+                    }else{
+                        if(count > 2){
+                            if(count%2 == 0){
+                                result += ((count-2)/2);
+                            }else{
+                                result += ((count-2)/2 + 1);
+                        }                            }
+                        count = 0;//置0,重新计算
+                    }
+                }
+                if(result >= n){
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    public boolean allzero(int[] flowerbed){
+        boolean result = true;
+        for(int i = 0; i < flowerbed.length; i++){
+            if(flowerbed[i] == 1){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+}
+
