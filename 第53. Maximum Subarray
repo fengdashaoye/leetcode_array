@@ -1,0 +1,77 @@
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+
+For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
+the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+思路:这道题之前在剑指offer里面做过，现在再重新做一遍。重点是一开始注意区分全正和全负，然后就是有正有负的情况，对于最后一种如果之前所加的结果result2
+仍大于0，则不改变，与result比较，比result大则替换，如果加的结果小于等于0，则说明之前所加已经小于0，无需再开，result2置为0.
+代码:
+public class Solution {
+    public int maxSubArray(int[] nums) {
+        if(allneg(nums)){
+            return max(nums);
+        }
+        if(allpositive(nums)){
+            return sum(nums);
+        }
+        int panduan = 0;
+        int result = 0, result2 = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(panduan == 0){
+                if(nums[i] >= 0){//过滤掉初始的为负的一串数字
+                    result += nums[i];
+                    result2 = result;
+                    panduan = 1;
+                }
+            }else{
+                result2 += nums[i];
+                if(result2 > result){
+                    result = result2;
+                }
+                if(result2 <= 0){//舍弃掉之前的一段，因为都<=0，置为0重新开始
+                    result2 = 0;
+                }
+            }
+        }
+        return result;
+        
+    }
+    public boolean allneg(int[] nums){
+        boolean result = true;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] > 0){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+    public int max(int[] nums){
+        int result = Integer.MIN_VALUE;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] > result){
+                result = nums[i];
+            }
+        }
+        return result;
+    }
+    public boolean allpositive(int[] nums){
+        boolean result = true;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] < 0){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+    public int sum(int[] nums){
+        int result = 0;
+        for(int i = 0; i < nums.length; i++){
+            result += nums[i];
+        }
+        return result;
+    }
+    
+}
+
+
