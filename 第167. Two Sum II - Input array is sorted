@@ -1,0 +1,53 @@
+Given an array of integers that is already sorted in ascending order, find two numbers 
+such that they add up to a specific target number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, 
+where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+
+You may assume that each input would have exactly one solution and you may not use the same element twice.
+
+Input: numbers={2, 7, 11, 15}, target=9
+Output: index1=1, index2=2
+思路:为了效率，首先用二分查找，找到target所在的位置的上限，然后用hashmap，需要注意的是数组中可能会有负数。
+代码:
+public class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int[] result = new int[2];
+        int position = 0;
+        if(target >= numbers[numbers.length-1] || target <= numbers[0]){//最后一个是需要注意[-1,0],-1这种情况
+            position = numbers.length-1;
+        }else{
+            position = get_position(numbers, target);
+        }
+        HashMap<Integer,Integer> list = new HashMap<Integer,Integer>();
+        for(int i = 0; i <= position; i++){
+            if(list.containsKey(target - numbers[i])){
+                result[0] = list.get(target-numbers[i])+1;
+                result[1] = i+1;
+                break;
+            }else{
+                list.put(numbers[i], i);
+            }
+        }
+        return result;
+        
+    }
+    public int get_position(int[] numbers, int target){
+        int low = 0;
+        int high = numbers.length-1;
+        while(high - low > 1){
+            int medium = (low + high) / 2;
+            if(target > numbers[medium]){
+                low = medium;
+            }else if(target < numbers[medium]){
+                high = medium;
+            }else{
+                return medium;
+            }
+        }
+        return high;//返回high而不是low是为了避免[-3,3,4,90],0这种情况
+        
+    }
+}
+
+
