@@ -1,0 +1,5 @@
+Given an array of integers and an integer k, you need to find the number of unique k-diff pairs 
+in the array. Here a k-diff pair is defined as 
+an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k.
+思路:这道题还挺简单的，主要是注意每一对k-diff是唯一的，比如对于[1,1,1,1,1]k=0时输出1，因为是唯一的。
+代码:
