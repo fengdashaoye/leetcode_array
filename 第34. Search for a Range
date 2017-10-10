@@ -1,0 +1,131 @@
+Given an array of integers sorted in ascending order, find the starting and ending position of a given target value.
+
+Your algorithm's runtime complexity must be in the order of O(log n).
+
+If the target is not found in the array, return [-1, -1].
+
+For example,
+Given [5, 7, 7, 8, 8, 10] and target value 8,
+return [3, 4].
+
+思路:我的思路是用二分法，不断二分看能否找到target的值，找到之后以其为端点将数组划分成上下两部分，再分别二分找到边界。
+但是还是慢
+代码:
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        if(nums.length == 1 && nums[0] == target){
+            int[] result1 = new int[]{0, 0};
+            return result1;
+        }
+        if(nums.length == 0){
+            int[] result2 = new int[]{-1, -1};
+            return result2;
+        }
+        int low = 0;
+        int high = nums.length - 1;
+        int middle = (low + high) / 2;
+        int panduan = 0;
+        while(low <= high){
+            System.out.println("low:" + low + "high:" + high);
+            middle = (low + high) / 2;
+            if(target == nums[middle]){
+                panduan = 1;
+                break;
+            }else if (target < nums[middle]){
+                high = middle - 1;
+            }else{
+                low = middle + 1;
+            }
+        }
+        int[] result = new int[]{-1, -1};
+        if(panduan == 0){
+            return result;
+        }
+        int fix = middle;
+        int left_high = middle;
+        int right_low = middle;
+        while(low <= left_high){
+            //System.out.println("low:" + low + "left_high:" + left_high);
+            //System.out.println("left_high: result[0]:" + result[0]);
+            middle = (low + left_high) / 2;
+            //System.out.println("left_high: middle:" + middle + "nums[middle]" + nums[middle]);
+            if(nums[middle] < target){
+                for(; middle < left_high; middle++){
+                    if(nums[middle] == target){
+                        result[0] = middle;
+                        break;
+                    }
+                }
+                if(middle == left_high){
+                    result[0] = left_high;
+                }
+                break;
+            }else{
+                left_high = middle;
+                if(nums[low] == target){
+                    result[0] = low;
+                    break;
+                }
+                
+            }
+        }
+        while(right_low <= high){
+            //System.out.println("right_low:" + right_low + "high:" + high);
+            middle = (right_low + high) / 2;
+            //System.out.println("right_low:" + right_low + "middle:" + middle + "nums[middle]" + nums[middle]);
+            if(nums[middle] > target){
+                for(; middle > right_low; middle--){
+                    if(nums[middle] == target){
+                        result[1] = middle;
+                        break;
+                    }
+                }
+                if(middle == right_low){
+                    result[1] = right_low;
+                }
+                break;
+            }else{
+                right_low = middle;
+                if(nums[high] == target){
+                    result[1] = high;
+                    break;
+                }
+                if(high - right_low == 1){
+                    result[1] = right_low;
+                    break;
+                }
+            }
+        }
+        return result;
+        
+    }
+}
+这是别人的代码:
+public class Solution {
+	public int[] searchRange(int[] A, int target) {
+		int start = Solution.firstGreaterEqual(A, target);
+		if (start == A.length || A[start] != target) {
+			return new int[]{-1, -1};
+		}
+		return new int[]{start, Solution.firstGreaterEqual(A, target + 1) - 1};
+	}
+
+	//find the first number that is greater than or equal to target.
+	//could return A.length if target is greater than A[A.length-1].
+	//actually this is the same as lower_bound in C++ STL.
+	private static int firstGreaterEqual(int[] A, int target) {
+		int low = 0, high = A.length;
+		while (low < high) {
+			int mid = low + ((high - low) >> 1);
+			//low <= mid < high
+			if (A[mid] < target) {
+				low = mid + 1;
+			} else {
+				//should not be mid-1 when A[mid]==target.
+				//could be mid even if A[mid]>target because mid<high.
+				high = mid;
+			}
+		}
+		return low;
+	}
+}
