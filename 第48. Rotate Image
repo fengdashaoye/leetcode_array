@@ -1,0 +1,101 @@
+You are given an n x n 2D matrix representing an image.
+
+Rotate the image by 90 degrees (clockwise).
+
+Note:
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix 
+and do the rotation.
+
+Example 1:
+
+Given input matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+rotate the input matrix in-place such that it becomes:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+Example 2:
+
+Given input matrix =
+[
+  [ 5, 1, 9,11],
+  [ 2, 4, 8,10],
+  [13, 3, 6, 7],
+  [15,14,12,16]
+], 
+
+rotate the input matrix in-place such that it becomes:
+[
+  [15,13, 2, 5],
+  [14, 3, 4, 1],
+  [12, 6, 8, 9],
+  [16, 7,10,11]
+]
+
+思路：老实说，这道题实在没有什么思路，除了新建一个二维矩阵之外，又不好直接看答案，还是要自己写一写，所以写了最简单的那种方法，当然
+时间复杂度挺高。
+代码：
+class Solution {
+    public void rotate(int[][] matrix) {
+        int length = matrix.length;
+        int[][] beifen = new int[length][length];
+        
+        for(int i = 0; i < length; i++){
+            for(int j = 0; j < length; j++){
+                beifen[i][length - j - 1] = matrix[j][i];
+            }
+        }
+        for(int i = 0; i < length; i++){
+            for(int j = 0; j < length; j++){
+                matrix[i][j] = beifen[i][j];       
+            }
+        }
+    }
+}
+
+别人的思路：先转置，再反转
+The idea was firstly transpose the matrix and then flip it symmetrically. For instance,
+
+1  2  3             
+4  5  6
+7  8  9
+after transpose, it will be swap(matrix[i][j], matrix[j][i])
+
+1  4  7
+2  5  8
+3  6  9
+Then flip the matrix horizontally. (swap(matrix[i][j], matrix[i][matrix.length-1-j])
+
+7  4  1
+8  5  2
+9  6  3
+代码：
+class Solution {
+    public void rotate(int[][] matrix) {
+        int length = matrix.length;
+        for(int i = 0; i < length; i++){
+            for(int j = i; j < length; j++){
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        
+        for(int i = 0; i < length; i++){
+            for(int j = 0; j < length/2; j++){
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][length - j - 1];
+                matrix[i][length - j - 1] = temp;
+            }
+        }
+    }
+}
+老实说，这个代码也不快。
+
