@@ -1,0 +1,90 @@
+Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+For example,
+Given n = 3,
+
+You should return the following matrix:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+
+思路：这种题是有规律的，不能瞎写，外部最大的循环肯定是数量的总数，不可能是边界值，因为边界在不断变化。
+然后这里有4种动作，左->右，上->下，右->左,下->上。
+下面分别解释。
+heng_length代表已经遍历过的横行数量
+shu_length代表已经遍历过的竖行数量
+从左->右，shu_length必为偶数，line不断增大，其终点为n - 1 - (shu_length/2)，shu_length/2表示最右边已经遍历过的数行的数量。
+从上->下，heng_length必为奇，row不断增大，其终点为 n - 1 - (heng_length - 1)/2，(heng_length - 1)/2表示最下面已经遍历过的横行的数量。
+从右->左，shu_length必为奇，line减少，其终点为(shu_length - 1)/2，(shu_length - 1)/2表示最左边已经遍历过的数行的数量。
+从下->上，heng_length必为偶，row不断减小，其终点为heng_length/2，heng_length/2最上面已经遍历过的横行的数量。
+
+可以可以，不错。
+代码：
+class Solution {
+    public int[][] generateMatrix(int n) {
+        //独立完成，辛苦辛苦，记得以前做过这道题
+        int[][] result = new int[n][n];
+        
+        int row = 0;
+        int line = 0;
+        int start = 0;//start是为了4种情况,左->右，上->下，右->左,下->上
+        int end = 0;
+        
+        int heng_length = 0;
+        int shu_length = 0;
+        for(int i = 0; i < n*n; i++){
+            System.out.print("row: " + row + " line: " + line + " start: " + start + " end: " + end);
+            if(start == 0 && end == 0){
+                if(line < n - 1 - (shu_length/2)){
+                    result[row][line] = i + 1;//为方便演算，后面再加1
+                    line++;
+                }else{
+                    result[row][line] = i + 1;
+                    end = 1;
+                    heng_length++;
+                    row++;
+                    //heng_length--;//因为第一排也有了
+                }
+            }else if(start == 0 && end == 1){
+                if(row < n - 1 - (heng_length - 1)/2){
+                    result[row][line] = i + 1;
+                    row++;
+                }else{
+                    result[row][line] = i + 1;
+                    start = 1;
+                    shu_length++;
+                    line--;
+                }
+            }else if(start == 1 && end == 1){
+                if(line > (shu_length - 1)/2){
+                    result[row][line] = i + 1;
+                    line--;
+                }else{
+                    result[row][line] = i + 1;
+                    end = 0;
+                    row--;
+                    heng_length++;
+                }
+            }else if(start == 1 && end == 0){
+                if(row > heng_length/2){
+                    result[row][line] = i + 1;
+                    row--;
+                }else{
+                    result[row][line] = i + 1;
+                    line++;
+                    shu_length++;
+                    start = 0;
+                }
+                
+            }
+            
+            
+            
+        }
+        return result;
+        
+        
+    }
+}
