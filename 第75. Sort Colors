@@ -1,0 +1,74 @@
+Given an array with n objects colored red, white or blue, sort them so that objects of the same color are adjacent, 
+with the colors in the order red, white and blue.
+
+Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+
+思路：这道题很简单，依次做两次调整即可，第一次，把红色跳到前面，第二次，把蓝色跳到后面。
+调整的过程为首先记下颜色的坐标，然后调整即可。注意第二次调整的时候是从后往前，因为list记录的坐标是从前往后，从后往前找颜色替换。
+所以循环的时候从list后面找。
+代码：
+class Solution {
+    public void sortColors(int[] nums) {
+        //两次调整应该可以,把红的调整到前面，把蓝的调整到后面
+        int length = nums.length;
+        ArrayList<Integer> red_position = new ArrayList<Integer>();
+        ArrayList<Integer> blue_position = new ArrayList<Integer>();
+        for(int i = 0; i < length; i++){
+            if(nums[i] == 0){
+                red_position.add(i);
+            }
+        }
+        
+        int j = 0;
+        for(int i = 0; i < red_position.size(); i++){
+            if(nums[j] != 0){
+                int temp = nums[j];
+                nums[j] = nums[red_position.get(i)];
+                nums[red_position.get(i)] = temp;
+            }
+            j++;//无论遇上的是不是红色，都得往后跳。不是红色，上面就交换，是红色跳过。
+        }
+        
+        for(int i = red_position.size(); i < length; i++){
+            if(nums[i] == 2){
+                blue_position.add(i);
+            }
+        }
+        
+        j = length - 1;
+        for(int i = blue_position.size() - 1; i >= 0; i--){//要从后面开始，因为是放到后面，即替换前面的蓝色
+            if(nums[j] != 2){
+                int temp = nums[j];
+                nums[j] = nums[blue_position.get(i)];
+                nums[blue_position.get(i)] = temp;
+            }
+            j--;
+        }
+        
+        
+    }
+}
+
+这是别人的方法：
+class Solution {
+    public void sortColors(int[] nums) {
+        int p1 = 0, p2 = nums.length - 1, index = 0;
+        while (index <= p2) {
+            if (nums[index] == 0) {
+                nums[index] = nums[p1];
+                nums[p1] = 0;//把开头的置为红色
+                p1++;
+            }
+            if (nums[index] == 2) {
+                nums[index] = nums[p2];
+                nums[p2] = 2;//把末尾的置为蓝色
+                p2--;
+                index--;
+            }
+            index++;
+        }
+    }
+}
+
+
+
