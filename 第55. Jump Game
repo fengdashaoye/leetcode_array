@@ -1,0 +1,39 @@
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Determine if you are able to reach the last index.
+
+For example:
+A = [2,3,1,1,4], return true.
+
+A = [3,2,1,0,4], return false.
+
+思路：注意看题，初始定位的坐标可以为<=nums[0]，而后的每一步可跳跃的步数的最大值为nums[i]，可以小于。
+基本思想是这样的：在每一步中，我们跟踪最远可达索引。问题的本质（例如，你可以击中一个目标范围而不是
+只跳一个目标的单跳）的最大跳跃是，对于一个可达到的索引，前面的每一个索引都必须是可达的。
+
+因此，我们在每个索引上迭代就足够了，如果我们遇到一个不能到达的索引，我们就中止并返回false。到最后，
+我们将迭代到最后一个索引。如果循环完成，则最后一个索引是可访问的。
+
+max为可以到达的最大位置,当max < i时，代表无法到达i，又因为i是不断向终点趋近的，如果在i没到达终点时，i > max，则返回false，其不可能到达终点。
+初始时max=0,max的更新为max = Math.max(nums[i] + i, max);拿原先的max最大终点与,现在的坐标+nums[i](代表跳到当前这一步后能够到达的最大终点)作比较
+不断更新，如果发现i>max，即在前往终点的路上，能够到达的最大终点小于i，则最终无法到达nums的终点。
+
+厉害厉害，他们果然很厉害。
+
+代码：
+class Solution {
+    public boolean canJump(int[] nums) {
+        int max = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(i > max){
+                return false;
+            }
+            max = Math.max(nums[i] + i, max);
+        }
+        return true;
+        
+        
+    }
+}
