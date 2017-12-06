@@ -1,0 +1,67 @@
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+Example:
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> Returns -3.
+minStack.pop();
+minStack.top();      --> Returns 0.
+minStack.getMin();   --> Returns -2.
+
+思路：这道题在剑指offer中遇到过，要想既能返回top,又能返回最小值，一个栈是不够的，需要两个栈。
+第一个栈依次压入输入的值，第二个栈依次压入此时的最小值，即第二个栈的第i个坐标的值为输入第i+1个数时的最小值。
+删除时两个栈要同时删除顶端，如果不同时删除，无法返回删除元素后的最小值。
+代码：
+class MinStack {
+
+    /** initialize your data structure here. */
+    Stack<Integer> stack1 = new Stack<Integer>();
+    Stack<Integer> stack2 = new Stack<Integer>();
+    public MinStack() {
+        
+        
+    }
+    
+    public void push(int x) {
+        if(stack1.size() == 0){
+            stack1.push(x);
+            stack2.push(x);
+        }else{
+            stack1.push(x);
+            int number = x > stack2.peek() ? stack2.peek() : x;
+            stack2.push(number);
+        }
+        
+    }
+    
+    public void pop() {
+        stack1.remove(stack1.size() - 1);
+        stack2.remove(stack2.size() - 1);
+        
+    }
+    
+    public int top() {
+        return stack1.peek();
+        
+    }
+    
+    public int getMin() {
+        return stack2.peek();
+        
+    }
+}
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack obj = new MinStack();
+ * obj.push(x);
+ * obj.pop();
+ * int param_3 = obj.top();
+ * int param_4 = obj.getMin();
+ */
