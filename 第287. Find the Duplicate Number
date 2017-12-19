@@ -1,0 +1,59 @@
+Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), prove that at least one duplicate 
+number must exist. Assume that there is only one duplicate number, find the duplicate one.
+
+Note:
+You must not modify the array (assume the array is read only).
+You must use only constant, O(1) extra space.
+Your runtime complexity should be less than O(n2).
+There is only one duplicate number in the array, but it could be repeated more than once.
+
+思路：一开始的思路是利用ArrayList, 不断遍历，不断看是否.contains，但后来想想判断.contains挺耗时的。
+然后想既然是数组，则先把他们排序，然后遍历一边，看每个数字是否与前一个数字相等即可。嗯，速度还行，
+错了，有限制，还不能改变数组。
+代码：
+class Solution {
+    public int findDuplicate(int[] nums) {
+        Arrays.sort(nums);
+        int result = -1;
+        for(int i = 1; i < nums.length; i++){
+            if(nums[i] == nums[i - 1]){
+                result = nums[i];
+                break;
+            }
+        }
+        return result;
+        
+    }
+}
+这是别人的代码：
+思路：
+基本思想是将数组抽象为一条线和一个圆环，因为1～n 之间有n＋1个数，所以一定有重复数字出现，所以重复的数字即是圆环与线的交汇点。
+然后设置两个指针，一个快指针一次走两步，一个慢指针一次走一步。当两个指针第一次相遇时，令快指针回到原点（0）且也变成一次走一步，
+慢指针则继续前进，再次回合时即是线与圆环的交汇点。
+int slow = nums[0];
+int fast = nums[nums[0]];
+以链表关系：slow->fast，他们的顺序关系用fast=nums[slow]表示。
+slow = nums[slow];表示一次走一步
+fast = nums[nums[fast]];表示一次走两步
+int findDuplicate3(vector<int>& nums)
+{
+	if (nums.size() > 1)
+	{
+		int slow = nums[0];
+		int fast = nums[nums[0]];
+		while (slow != fast)
+		{
+			slow = nums[slow];
+			fast = nums[nums[fast]];
+		}
+
+		fast = 0;
+		while (fast != slow)
+		{
+			fast = nums[fast];
+			slow = nums[slow];
+		}
+		return slow;
+	}
+	return -1;
+}
