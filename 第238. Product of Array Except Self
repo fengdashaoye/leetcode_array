@@ -1,0 +1,44 @@
+Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements 
+of nums except nums[i].
+
+Solve it without division and in O(n).
+
+For example, given [1,2,3,4], return [24,12,8,6].
+
+Follow up:
+Could you solve it with constant space complexity? (Note: The output array does not count as extra space for the purpose of space
+complexity analysis.)
+
+思路：不能用除法。
+首先新创建一个数组：result[0] = 1; result[i] = result[i - 1] * nums[i - 1];
+对于[1,2,3,4]
+一开始处理完后res成[1,1,2,6]
+即res[0] = 1; res[1] = nums[0]; res[2] = res[1] * nums[1] = nums[0] * nums[1]; res[3] = nums[0] * nums[1] * nums[2]
+即除了res[0], res[i] = nums[0] *....* nums[i - 1]
+
+然后设置一个变量right，初始为1.
+res[length - 1] *= res[length - 1] * right
+然后更新right, right *= nums[length - 1]，
+再然后res[length - 2] * right,这样res[length - 2]就能完美避开nums[length - 2],
+再更新right
+即right从nums[length - 1]变成nums[length - 1] * nums[length - 2] 变成nums[length - 1] * nums[length - 2] * ....nums[1]。
+真是厉害
+
+代码：
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int[] result = new int[nums.length];
+        result[0] = 1;
+        for(int i = 1; i < result.length; i++){
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        int right = 1;
+        for(int i = nums.length - 1; i >= 0; i--){
+            result[i] *= right;
+            right *= nums[i];
+        }
+        return result;
+        
+        
+    }
+}
