@@ -1,0 +1,50 @@
+Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of 
+elements in both subsets is equal.
+
+Note:
+Each of the array element will not exceed 100.
+The array size will not exceed 200.
+Example 1:
+
+Input: [1, 5, 11, 5]
+
+Output: true
+
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+Example 2:
+
+Input: [1, 2, 3, 5]
+
+Output: false
+
+Explanation: The array cannot be partitioned into equal sum subsets.
+
+思路：首先判断返回是否返回false，因为可以分成两个子集，子集的和是相等的，所以全部数目加起来sum要为偶数。
+然后判断能否存在和为sum/2的集合。另target = sum / 2;
+这时候就跟第494题好像啊，都是找一个集合中是否存在某些子集合的和等于某个特定的target.
+利用动态规划，
+递归式为：dp[j] = dp[j] || dp[j - num];不断判断，如果dp[j] = dp[j] || dp[j - num]，dp[j] || dp[j - num]中的dp[j]
+是为了将以往结果加进来，如果以往存在true,则最终都为true，对于dp[j - num]，如果dp[j - num]为true，则因为num存在，则j - num + num = j
+所以dp[j] = true，子集和为j的方案是存在的。。。
+代码：
+class Solution {
+    public boolean canPartition(int[] nums) {//这道题感觉和第494题好像啊，都是找一个集合中是否存在某些子集合的和等于某个特定的target
+        int sum = 0;
+        for(int num : nums){
+            sum += num;
+        }
+        if(sum % 2 > 0){
+            return false;
+        }
+        int target = sum / 2;
+        boolean[] panduan = new boolean[target + 1];
+        panduan[0] = true;
+        for(int num : nums){
+            for(int i = target; i >= num; i--){
+                panduan[i] = panduan[i] || panduan[i - num];
+            }
+        }
+        return panduan[target];
+        
+    }
+}
