@@ -1,0 +1,69 @@
+Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
+
+Example 1:
+Input:nums = [1,1,1], k = 2
+Output: 2
+Note:
+The length of the array is in range [1, 20,000].
+The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+
+思路：最笨的方法，以每个数字为起点，依次加上后面的值，判断是否等于k，因为是连续的自己嘛。方法挺慢的，20.21%
+别人的思路，利用hashmap
+代码：
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        if(nums == null || nums.length == 0){
+            return 0;
+        }
+        int count = 0;
+        for(int i = 0; i < nums.length; i++){
+            int sum = nums[i];
+            if(sum == k){
+                count++;
+            }
+            for(int j = i + 1; j < nums.length; j++){
+                sum += nums[j];
+                if(sum == k){
+                    count++;
+                }
+            }
+        }
+        return count;
+        
+    }
+}
+
+思路：
+暴力破解是为了计算sum[i---j]的和是否等于k。
+这一种方法是通过sum[0----i-1]和sum[0-------j]来实现的
+因为数组中可能存在负数，sum是依次加上遍历节点i之前节点数值之和。在遍历过程中sum的值可能与之前遍历某一节点时刻的sum值相等。
+如果依次遍历节点，当遍历到一个节点j是，sum[0--------j]==sum，
+而此时map存在key值sum - k,即之前遍历到一个节点i时sum[0-------i]==sum - k,则此时存在方案i-----j的和为k.这时就需要看key值为sum-k的value，
+因为有可能遍历到多个节点i1,i2,i3(都小于j)时和为sum - k，即存在i1----j,i2------j,i3-----j的方案和。
+然后将sum作为key值put进map中，若之前存在以sum值为key的map，其value值加1.若不存在，sum作为key值,value值为1.
+然后依次遍历不同j,j1,j2,j3....。
+代码：
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        if(nums == null || nums.length == 0){
+            return 0;
+        }
+        int sum = 0;
+        int result = 0;
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        map.put(0, 1);
+        for(int i = 0; i < nums.length; i++){
+            sum += nums[i];
+            if(map.containsKey(sum - k)){
+                result += map.get(sum - k);
+            }
+            if(map.containsKey(sum)){
+                map.put(sum, map.get(sum) + 1);
+            }else{
+                map.put(sum, 1);
+            }
+        }
+        return result;
+        
+    }
+}
