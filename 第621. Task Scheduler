@@ -1,0 +1,196 @@
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.
+Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just 
+be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing 
+different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+Example 1:
+Input: tasks = ["A","A","A","B","B","B"], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+Note:
+The number of tasks is in the range [1, 10000].
+The integer n is in the range [0, 100].
+
+一开始的思路是把不同的依次来一遍。
+Input:
+["A","A","A","A","A","A","B","C","D","E","F","G"]
+2
+Output:
+20
+Expected:
+16
+Stdout:
+A..........
+AB..........
+ABC..........
+ABCD..........
+ABCDE..........
+ABCDEF..........
+ABCDEFG..........
+ABCDEFGA..........
+ABCDEFGA**A..........
+ABCDEFGA**A**A..........
+ABCDEFGA**A**A**A..........
+ABCDEFGA**A**A**A**A..........
+最终应该是错的。
+应该是
+ABCADEAFGA**A**A
+所以最初的思路是错的。。
+
+代码：
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        if(tasks == null || tasks.length == 0){
+            return 0;
+        }
+        if(n == 0){
+            return tasks.length;
+        }
+        HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        ArrayList<Character> list = new ArrayList<Character>();
+        for(int i = 0; i < tasks.length; i++){
+            if(map.containsKey(tasks[i])){
+                map.put(tasks[i], map.get(tasks[i]) + 1);
+            }else{
+                map.put(tasks[i], 1);
+                list.add(tasks[i]);//依次存储各个字符，只存储一次
+            }
+        }
+        
+        
+        int position = 0;
+        ArrayList<Character> result = new ArrayList<Character>();
+        
+        for(int i = 0; i < tasks.length; i++){
+            if(i < list.size()){
+                result.add(list.get(position));
+                map.put(list.get(position), map.get(list.get(position)) - 1);
+                position++;
+                
+                for(int t = 0; t < result.size(); t++){
+                    System.out.print(result.get(t));
+                }
+                System.out.println("..........");
+            }else{
+                if(position == list.size()){
+                    position = 0;
+                }
+                if(map.get(list.get(position)) > 0){
+                    //if(result.size() >= n && result.get(result.size() - n) != list.get(position)){
+                    if(result.size() >= n && !result.subList(result.size() - n, result.size()).contains(list.get(position))){
+                        result.add(list.get(position));
+                        map.put(list.get(position), map.get(list.get(position)) - 1);
+                        position++;
+                        for(int t = 0; t < result.size(); t++){
+                            System.out.print(result.get(t));
+                        }
+                        System.out.println("..........");
+                    }else{
+                        while(result.size() < n || result.subList(result.size() - n, result.size()).contains(list.get(position))){//'*'代表idle
+                            result.add('*');
+                        }
+                        result.add(list.get(position));
+                        map.put(list.get(position), map.get(list.get(position)) - 1);
+                        position++;
+                        for(int t = 0; t < result.size(); t++){
+                            System.out.print(result.get(t));
+                        }
+                        System.out.println("..........");
+                    }
+                }else{
+                    while(map.get(list.get(position)) == 0){
+                        position++;
+                        if(position == list.size()){
+                            position = 0;
+                        }
+                    }
+                    if(result.size() >= n && !result.subList(result.size() - n, result.size()).contains(list.get(position))){
+                        result.add(list.get(position));
+                        map.put(list.get(position), map.get(list.get(position)) - 1);
+                        position++;
+                        for(int t = 0; t < result.size(); t++){
+                            System.out.print(result.get(t));
+                        }
+                        System.out.println("..........");
+                    }else{
+                        while(result.size() < n || result.subList(result.size() - n, result.size()).contains(list.get(position))){//'*'代表idle
+                            result.add('*');
+                        }
+                        result.add(list.get(position));
+                        map.put(list.get(position), map.get(list.get(position)) - 1);
+                        position++;
+                        for(int t = 0; t < result.size(); t++){
+                            System.out.print(result.get(t));
+                        }
+                        System.out.println("..........");
+                    }
+                    
+                }
+            }
+        }
+        
+        return result.size();
+        
+    }
+}
+
+
+解法分析
+本题采用贪心算法。根据题意，相同的任务需要间隔n个时隙以上，因此，使得总时隙长的主要原因就是相同任务需要间隔分布，找到出现次数最多的任务，
+将其作为框架，这就是本题的贪心选择。假设频数最高的任务频数为k，则框架中有k-1个大间隙，之后依次向间隙中插入频数递减的任务，一次插入一个任务
+，k-1个间隙轮流插入，这样能保证插入间隙的任务数足够均匀。举例如下：
+输入为AAAABBBEEFFGG n=3
+首先选频数最高的A作为框架A______A______A_______A，注意框架间隙没有时隙数限制，不一定是n。
+找到频数第二的B，依次放入每个时隙，得到AB____AB_____AB_____A。
+之后是E，得到ABE___ABE____AB____A。
+之后是F，得到ABEF____ABE___ABF____A，注意第一个F是插入第三个间隙的，之后循环插入了第一个间隙。
+最后是G，得到ABEF____ABEG___ABFG___A，此时所有元素都放入了，且都满足间隔3以上，则最终得到ABEFABEGABFGA，可以看出，这正好是tasks的长度。
+再看第二个例子：输入为ACCCEEE n=2
+框架为CE___CE___CE
+放入A后为CEACE_CE，这也是最终结果，由于n=2，所以有一个idle，总共时隙为，这个不是tasks长度，而是(n+1)*(freq(CE)-1)+2，其中2为频数最高任务
+的个数。
+下面证明上述算法的正确性。
+分两种情况，一是间隙填满，所需时隙数就是任务数，明显是最少时隙数。第二种情况是间隙没填满，所需时隙数为(n+1)*(freq(CE)-1)+k，k为频数最大
+任务数，如第二个例子，由于每次放入都是循环放入间隙，由于没填满，所以框架的间隙就是n，由此可以求出总共需要的时隙数。
+为什么是(freq(CE)-1)，首先，对于A______A______A_______A，最频繁的为A，fre=4,所以需要有3个间隙，间隙的个数=fre - 1.
+我明白什么意思了，对于一次调度，相当于长度为n+1的链，这条链里面除了idle以外其他的元素不能重复。间隙的个数等于调度的个数。
+对于上面我们需要A___(长度为n+1,1是因为最少有一个最频繁的元素，1为开头边界)，然后A___,再然后A___，调度完了以后，剩下最后的A，因为可能多个
+长度最长的元素，
+所以(max_fre - 1)*(n + 1) + max_fre_count)。。。
+
+我们首先考虑出现频率最高的task，我们仍假设为A，出现的频率为x，我们知道，要满足A的时间需求，我们至少应该有 x-1个n的间隔。对于频率小于x的任务，
+假设为B，我们按序插入任务B，可以发现，这样的插入也是满足要求的。满足A的最小安排，最终所有的任务安排都是满足要求的（先不考虑任务多得插不进
+去的情况）。 因为出现频率最高的元素可能不止一个，我们假设为k个，那么这种情况下最终的时间需求为： (x-1)*n+k
+
+代码：
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        if(tasks == null || tasks.length == 0){
+            return 0;
+        }
+        if(n == 0){
+            return tasks.length;
+        }
+        HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        ArrayList<Character> list = new ArrayList<Character>();
+        int[] content = new int[26];
+        for(int i = 0; i < tasks.length; i++){
+            content[tasks[i] - 'A']++;
+        }
+        int max_fre = 0;
+        int max_fre_count = 0;
+        for(int i = 0; i < 26; i++){
+            if(content[i] > max_fre){
+                max_fre = content[i];
+                max_fre_count = 1;
+            }else if(content[i] == max_fre){
+                max_fre_count++;
+            }
+        }
+        return Math.max(tasks.length, (max_fre - 1)*(n + 1) + max_fre_count);
+        
+    }
+}
