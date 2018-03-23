@@ -11,6 +11,34 @@ Example 2:
 Input: flowerbed = [1,0,0,0,1], n = 2
 Output: False
 
+除了开头和结尾的特殊情况外，在中间要种花，都需要有三个空位。因此设置变量empty来计数空位，当达到3时，
+可以插入一朵花，并且empty变为1。而在开头和结尾处，则需要两个空位就能放花，注意[0，0，0，0，1]，这一类情况。
+public class Solution {
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        if(n==1&&flowerbed.length==1&&flowerbed[0]==0)return true;
+        int empty=0;
+        int canflower=0;
+        for(int i=0;i<flowerbed.length;i++){
+            if(flowerbed[i]==0){
+                empty++;
+                if(empty==3){//有3个空位，插中间
+                    canflower++;
+                    empty=1;//插入一朵花，往后面看，empty只剩下1个了
+                }
+                if(((i==flowerbed.length-1)||(i==1))&&empty>=2){//这里i == 1是因为此时为第二个坐标，如果此时empty >= 2，则说明初始位置
+                //也为empty此时canflower,empty要更新为1，因为开头可以插一个花，empty只剩下1个了
+                    canflower++;
+                    empty=1;
+                }
+            }else{
+                empty=0;
+            }
+        }
+        if(canflower>=n)return true;
+        return false;
+    }
+}
+
 思路:首先分清4中情况 根据首尾有4种情况:0.....0,0......1,1......0,1........1
 然后每种情况在分别分析就行，代码有点长，但是重用的很多。
 代码:
