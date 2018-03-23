@@ -8,7 +8,12 @@ Input: [2, 6, 4, 8, 10, 9, 15]
 Output: 5
 Explanation: You need to sort [6, 4, 8, 10, 9] in ascending order to make the whole array sorted in ascending order.
 
-
+思路：
+这道题还可以，首先从起点开始往后遍历，直至出现降序，如例子中2,6为升序，此时2,6,4出现降序。记录降序位置,4的坐标为2.
+然后从终点开始向前遍历，直至出现升序，如,9,15为降序，10,9,15出现升序(从右往左)。记录10的坐标为4.
+此时找坐标2到4之间的最小值i和最大值j，对于最小值i，从起点开始，看哪一个值比他小，如2坐标为0，此时最小值应该插在坐标0的左边，即从坐标1开始。
+对于最大值j，从终点开始，看哪一个值比它小，如9，其坐标为5，此时j应该位于9的坐标5.
+5 - 1 + 1 = 5.
 没过的代码:
 public class Solution {
     public int findUnsortedSubarray(int[] nums) {
